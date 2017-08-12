@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.example.oogatta.myapplication.MySweetViewModel" />
+            type="com.example.oogatta.myapplication.TitleViewModel" />
     </data>
 
 
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:text="@{vm.text}"
-            android:textSize="32dp"
+            android:textSize="32sp"
             android:textStyle="bold"
             tools:text="Title" />
 
