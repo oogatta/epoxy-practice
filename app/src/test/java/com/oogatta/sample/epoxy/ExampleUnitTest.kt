@@ -1,4 +1,4 @@
-package com.example.oogatta.myapplication
+package com.oogatta.sample.epoxy
 
 import org.junit.Test
 

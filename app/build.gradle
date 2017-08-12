@@ -10,7 +10,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
-        applicationId 'com.example.oogatta.sample.epoxy'
+        applicationId 'com.oogatta.sample.epoxy'
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1

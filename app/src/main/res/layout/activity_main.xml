@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.oogatta.myapplication.MainActivity">
+    tools:context="com.oogatta.sample.epoxy.MainActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_sweet_recycler_view"

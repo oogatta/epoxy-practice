@@ -1,14 +1,13 @@
-package com.example.oogatta.myapplication
+package com.oogatta.sample.epoxy
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.example.oogatta.myapplication.databinding.FeedBinding
-import com.example.oogatta.myapplication.databinding.FooterBinding
-import com.example.oogatta.myapplication.databinding.TitleBinding
+import com.oogatta.sample.epoxy.databinding.FeedBinding
+import com.oogatta.sample.epoxy.databinding.FooterBinding
+import com.oogatta.sample.epoxy.databinding.TitleBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
