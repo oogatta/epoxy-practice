@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.oogatta.myapplication.databinding.FooterBinding
 import com.example.oogatta.myapplication.databinding.TitleBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         vmList.add(MySweetViewModel("Hello, Ebisu!"))
+        vmList.add(MySweetViewModel("from oogatta, Inc"))
 
         adapter = MySweetAdapter(vmList)
         my_sweet_recycler_view.adapter = adapter
@@ -55,9 +57,13 @@ class MySweetAdapter(val vmList: List<MySweetViewModelable>) : RecyclerView.Adap
         }
     }
 
-    class FooterViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class FooterViewHolder(val binding: FooterBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             println("FooterViewHolder.init")
+        }
+
+        fun bind(vm: MySweetViewModel) {
+            binding.vm = vm
         }
     }
 
@@ -73,6 +79,7 @@ class MySweetAdapter(val vmList: List<MySweetViewModelable>) : RecyclerView.Adap
             }
             ViewType.FOOTER.type -> {
                 println("onBindViewHolder: FOOTER")
+                (holder as? FooterViewHolder)?.bind(vmList[position] as MySweetViewModel)
             }
         }
     }
@@ -92,7 +99,7 @@ class MySweetAdapter(val vmList: List<MySweetViewModelable>) : RecyclerView.Adap
         return when (viewType) {
             ViewType.TITLE.type -> TitleViewHolder(TitleBinding.inflate(LayoutInflater.from(parent!!.context), parent, false))
             ViewType.FEED.type -> FeedViewHolder(LayoutInflater.from(parent!!.context).inflate(R.layout.feed, parent, false))
-            ViewType.FOOTER.type -> FooterViewHolder(LayoutInflater.from(parent!!.context).inflate(R.layout.footer, parent, false))
+            ViewType.FOOTER.type -> FooterViewHolder(FooterBinding.inflate(LayoutInflater.from(parent!!.context), parent, false))
             else -> FeedViewHolder(LayoutInflater.from(parent!!.context).inflate(R.layout.feed, parent, false))
         }
     }
