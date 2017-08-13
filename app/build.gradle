@@ -30,6 +30,19 @@ android {
     }
 }
 
+// ここで設定を効かせられない（kapt だから？）
+// 仕方ないので package-info.java で設定している
+//project.android.buildTypes.all { buildType ->
+//    buildType.javaCompileOptions.annotationProcessorOptions.arguments =
+//        [
+//            // Validation is disabled in production to remove the runtime overhead
+//            validateEpoxyModelUsage     : String.valueOf(buildType.name == 'debug'),
+//            requireHashCodeInEpoxyModels: "true",
+//            requireAbstractEpoxyModels  : "true",
+//            implicitlyAddAutoModels     : "true"
+//        ]
+//}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -40,8 +53,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
     kapt "com.android.databinding:compiler:3.0.0-beta2"
+
+    implementation 'com.airbnb.android:epoxy:2.2.0'
+    implementation 'com.airbnb.android:epoxy-databinding:2.2.0'
+    kapt 'com.airbnb.android:epoxy-processor:2.2.0'
 }
 
 kapt {
     generateStubs = true
+    correctErrorTypes = true
 }
