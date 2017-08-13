@@ -54,27 +54,30 @@ class FooterViewModel(val text: String): MySweetViewModelable
 // 2つなら Typed2EpoxyController 。4まである
 class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>() {
 
-    // 自動生成モデルをそのまま使える場合は AutoModel でアノテートすると buildModels の中で簡単に書ける
+    // Android の data binding を使う場合、モデルクラスはレイアウト XML タグから自動生成される（末尾にアンダースコアが付く）
+    // 自動生成モデルのインスタンスを入れたプロパティを AutoModel でアノテートすると buildModels の中の書き方がさらに簡単になる
     @AutoModel lateinit var title: TitleBindingModel_
     @AutoModel lateinit var footer: FooterBindingModel_
 
-    override fun buildModels(data: List<MySweetViewModelable>?) {
-        data ?: return
+    override fun buildModels(vmList: List<MySweetViewModelable>?) {
+        vmList ?: return
 
         // implicitlyAddAutoModels を true にしていれば、
         // BindingModel_ にデータをアサインするだけで表示される
-        title.vm(data.first() as TitleViewModel)
-
+        title.vm(vmList.first() as TitleViewModel)
 
         // シンプルな view の連続であればここでそのままやってしまう
-        // データの多い複雑な view 場合は ModelGroup が使える
-        data.subList(1, data.size - 1).forEachIndexed { index, vm ->
+        // データの多い複雑な view 場合は ModelGroup を使う
+        vmList.subList(1, vmList.size - 1).forEachIndexed { index, vm ->
             FeedBindingModel_()
+                // ※id の振り方、間違っているかも
                 .id(index)
+                // レイアウトの xml で variable タグを書くと、 setter/getter が自動生成される
+                // ここでは vm と hander という variable タグによって生成された setter を使う
                 .vm(vm as FeedViewModel)
                 .addTo(this)
         }
 
-        footer.vm(data.last() as FooterViewModel)
+        footer.vm(vmList.last() as FooterViewModel)
     }
 }
