@@ -1,18 +1,14 @@
 package com.oogatta.sample.epoxy
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.oogatta.sample.epoxy.databinding.FeedBinding
-import com.oogatta.sample.epoxy.databinding.FooterBinding
-import com.oogatta.sample.epoxy.databinding.TitleBinding
+import android.support.v7.app.AppCompatActivity
+import com.airbnb.epoxy.AutoModel
+import com.airbnb.epoxy.TypedEpoxyController
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>
+    val controller = MySweetController()
     var vmList = arrayListOf<MySweetViewModelable>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,8 +28,13 @@ class MainActivity : AppCompatActivity() {
         // Footer
         vmList.add(FooterViewModel("from oogatta, Inc"))
 
-        adapter = MySweetAdapter(vmList)
-        my_sweet_recycler_view.adapter = adapter
+        my_sweet_recycler_view.adapter = controller.adapter
+
+        updateController()
+    }
+
+    private fun updateController() {
+        controller.setData(vmList)
     }
 }
 
@@ -48,79 +49,35 @@ class FeedViewModel(
 
 class FooterViewModel(val text: String): MySweetViewModelable
 
-class MySweetAdapter(val vmList: List<MySweetViewModelable>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    enum class ViewType(val type: Int) {
-        TITLE(0),
-        FEED(1),
-        FOOTER(2),
-    }
 
+// buildModels に欲しい引数が1つなら TypedEpoxyController
+// 2つなら Typed2EpoxyController 。4まである
+class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>() {
 
-    class TitleViewHolder(val binding: TitleBinding) : RecyclerView.ViewHolder(binding.root) {
-        init {
-            println("TitleViewHolder.init")
+    // Android の data binding を使う場合、モデルクラスはレイアウト XML タグから自動生成される（末尾にアンダースコアが付く）
+    // 自動生成モデルのインスタンスを入れたプロパティを AutoModel でアノテートすると buildModels の中の書き方がさらに簡単になる
+    @AutoModel lateinit var title: TitleBindingModel_
+    @AutoModel lateinit var footer: FooterBindingModel_
+
+    override fun buildModels(vmList: List<MySweetViewModelable>?) {
+        vmList ?: return
+
+        // implicitlyAddAutoModels を true にしていれば、
+        // BindingModel_ にデータをアサインするだけで表示される
+        title.vm(vmList.first() as TitleViewModel)
+
+        // シンプルな view の連続であればここでそのままやってしまう
+        // データの多い複雑な view 場合は ModelGroup を使う
+        vmList.subList(1, vmList.size - 1).forEachIndexed { index, vm ->
+            FeedBindingModel_()
+                // ※id の振り方、間違っているかも
+                .id(index)
+                // レイアウトの xml で variable タグを書くと、 setter/getter が自動生成される
+                // ここでは vm と hander という variable タグによって生成された setter を使う
+                .vm(vm as FeedViewModel)
+                .addTo(this)
         }
 
-        fun bind(vm: TitleViewModel) {
-            binding.vm = vm
-        }
-    }
-
-    class FeedViewHolder(val binding: FeedBinding) : RecyclerView.ViewHolder(binding.root) {
-        init {
-            println("FeedViewHolder.init")
-        }
-
-        fun bind(vm: FeedViewModel) {
-            binding.vm = vm
-        }
-    }
-
-    class FooterViewHolder(val binding: FooterBinding) : RecyclerView.ViewHolder(binding.root) {
-        init {
-            println("FooterViewHolder.init")
-        }
-
-        fun bind(vm: FooterViewModel) {
-            binding.vm = vm
-        }
-    }
-
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
-        when (holder!!.itemViewType) {
-            ViewType.TITLE.type -> {
-                println("onBindViewHolder: TITLE")
-                (holder as? TitleViewHolder)?.bind(vmList[position] as TitleViewModel)
-            }
-            ViewType.FEED.type -> {
-                println("onBindViewHolder: FEED")
-                (holder as? FeedViewHolder)?.bind(vmList[position] as FeedViewModel)
-            }
-            ViewType.FOOTER.type -> {
-                println("onBindViewHolder: FOOTER")
-                (holder as? FooterViewHolder)?.bind(vmList[position] as FooterViewModel)
-            }
-        }
-    }
-
-    override fun getItemCount(): Int = vmList.size
-
-    override fun getItemViewType(position: Int): Int {
-        return when (position) {
-            0 -> ViewType.TITLE.type
-            in 1..vmList.size - 2 -> ViewType.FEED.type
-            vmList.size - 1 -> ViewType.FOOTER.type
-            else -> ViewType.FEED.type
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ViewType.TITLE.type -> TitleViewHolder(TitleBinding.inflate(LayoutInflater.from(parent!!.context), parent, false))
-            ViewType.FEED.type -> FeedViewHolder(FeedBinding.inflate(LayoutInflater.from(parent!!.context), parent, false))
-            ViewType.FOOTER.type -> FooterViewHolder(FooterBinding.inflate(LayoutInflater.from(parent!!.context), parent, false))
-            else -> FeedViewHolder(FeedBinding.inflate(LayoutInflater.from(parent!!.context), parent, false))
-        }
+        footer.vm(vmList.last() as FooterViewModel)
     }
 }
