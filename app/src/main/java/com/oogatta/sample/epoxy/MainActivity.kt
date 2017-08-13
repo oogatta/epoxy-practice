@@ -52,7 +52,7 @@ class FooterViewModel(val text: String): MySweetViewModelable
 
 // buildModels に欲しい引数が1つなら TypedEpoxyController
 // 2つなら Typed2EpoxyController 。4まである
-class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>() {
+class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>(), FeedEventHandler {
 
     // Android の data binding を使う場合、モデルクラスはレイアウト XML タグから自動生成される（末尾にアンダースコアが付く）
     // 自動生成モデルのインスタンスを入れたプロパティを AutoModel でアノテートすると buildModels の中の書き方がさらに簡単になる
@@ -75,9 +75,18 @@ class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>() {
                 // レイアウトの xml で variable タグを書くと、 setter/getter が自動生成される
                 // ここでは vm と hander という variable タグによって生成された setter を使う
                 .vm(vm as FeedViewModel)
+                .handler(this)
                 .addTo(this)
         }
 
         footer.vm(vmList.last() as FooterViewModel)
     }
+
+    override fun onCellClick(vm: FeedViewModel) {
+        println(vm)
+    }
+}
+
+interface FeedEventHandler {
+    fun onCellClick(vm: FeedViewModel)
 }

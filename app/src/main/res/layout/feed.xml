@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="handler"
+            type="com.oogatta.sample.epoxy.FeedEventHandler" />
+
+        <variable
             name="vm"
             type="com.oogatta.sample.epoxy.FeedViewModel" />
     </data>
@@ -15,6 +19,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{() -> handler.onCellClick(vm)}"
         android:padding="8dp">
 
         <TextView
