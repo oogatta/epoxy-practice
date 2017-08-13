@@ -52,7 +52,7 @@ class FooterViewModel(val text: String): MySweetViewModelable
 
 // buildModels に欲しい引数が1つなら TypedEpoxyController
 // 2つなら Typed2EpoxyController 。4まである
-class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>() {
+class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>(), FeedEventHandler {
 
     // 自動生成モデルをそのまま使える場合は AutoModel でアノテートすると buildModels の中で簡単に書ける
     @AutoModel lateinit var title: TitleBindingModel_
@@ -72,9 +72,18 @@ class MySweetController: TypedEpoxyController<List<MySweetViewModelable>>() {
             FeedBindingModel_()
                 .id(index)
                 .vm(vm as FeedViewModel)
+                .handler(this)
                 .addTo(this)
         }
 
         footer.vm(data.last() as FooterViewModel)
     }
+
+    override fun onCellClick(vm: FeedViewModel) {
+        println(vm)
+    }
+}
+
+interface FeedEventHandler {
+    fun onCellClick(vm: FeedViewModel)
 }
